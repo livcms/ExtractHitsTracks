@@ -1,54 +1,65 @@
 #ifndef test_ExtractHitsTracks_Ntuple
-#define test_ExtractHitsTrakcs_Ntuple
+#define test_ExtractHitsTracks_Ntuple
 
-#include "DataFormats/Candidate/interface/CandidateFwd.h"
-#include "DataFormats/Common/interface/DetSetVectorNew.h"
 #include "DataFormats/Common/interface/Handle.h"
-#include "DataFormats/ParticleFlowReco/interface/PreIdFwd.h"
-#include "DataFormats/PatCandidates/interface/PackedGenParticle.h"
-#include "DataFormats/Phase2TrackerCluster/interface/Phase2TrackerCluster1D.h"
-#include "DataFormats/SiPixelCluster/interface/SiPixelCluster.h"
-#include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "FWCore/Framework/interface/Event.h"
-#include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
+#include "test/ExtractHitsTracks/interface/Data.h"
 #include <vector>
 
 class TTree;
-
-constexpr size_t ARRAY_SIZE_MAX = 10000;
 
 class Ntuple {
   
  public:
   
-  static constexpr size_t NHITS_MAX = 30;
-  static constexpr int NEG_INT = -10;
-  static constexpr float NEG_FLOAT = -10.;
-  static constexpr float NEG_FLOATSQ = -1.*NEG_FLOAT*NEG_FLOAT;
+  static constexpr size_t ARRAY_SIZE_MAX = 500000;
   
   Ntuple() {}
-  
-  void reset() {
-    Ntuple dummy;  // create a new object 
-    *this = dummy; // use assignment to reset
-  }
-  
-  void link_tree( TTree* tree );
+  void reset();
+  void link_tree(TTree* tree);
 
-  void fill_evt( const edm::EventID& id ); 
-  void fill_clu( edmNew::DetSetVector<SiPixelCluster> const* siPixelClusters,
-		 edmNew::DetSetVector<Phase2TrackerCluster1D> const* siPhase2Clusters );
+  void fill_evt(const edm::EventID& id);
+  void fill_data(const std::vector<ntuple::Data>& data, size_t& index);
   
  public:
-  
-  unsigned int run_ = 0;
-  unsigned int lumi_ = 0;
-  unsigned long long evt_ = 0;
-  
-  int pixel_clu_n_ = 0;
-  int pixel_clu_size_[ARRAY_SIZE_MAX] = {};
-  int strip_clu_n_ = 0;
-  int strip_clu_size_[ARRAY_SIZE_MAX] = {};
+
+  // Event-level scalars
+
+  Int_t run_ = 0;
+  Int_t lumi_ = 0;
+  Int_t evt_ = 0;
+
+  Int_t nhit_ = 0;
+  Int_t hit_n_ = 0;
+
+  // Event-level arrays
+
+  // RecHit
+  std::vector<int> hit_id_;
+
+  std::vector<float> x_;
+  std::vector<float> y_;
+  std::vector<float> z_;
+
+  // GEN
+  std::vector<int> particle_id_;
+  std::vector<int> pdg_id_;
+  std::vector<float> gen_pt_;
+  std::vector<float> gen_eta_;
+  std::vector<float> gen_phi_;
+
+  // SimHit
+  std::vector<int> sim_type_;
+  std::vector<int> sim_id_;
+  std::vector<float> sim_dxy_sig_;
+  std::vector<float> sim_pt_;
+  std::vector<float> sim_eta_;
+  std::vector<float> sim_phi_;
+
+  // Geometry
+  std::vector<int> volume_id_;
+  std::vector<int> layer_id_;
+  std::vector<int> module_id_;
 
 }; 
 
